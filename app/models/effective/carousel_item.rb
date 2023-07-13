@@ -3,13 +3,14 @@
 # The carousel items belong to a carousel through the string field
 module Effective
   class CarouselItem < ActiveRecord::Base
+    include ActiveStorage::Attached::Model
     attr_accessor :current_user
 
     # For the body
     has_many_rich_texts
 
     # For the image attachment
-    has_one_attached :file
+    # has_one_attached :file
 
     log_changes if respond_to?(:log_changes)
 

@@ -1,6 +1,7 @@
 # Banners can be
 module Effective
   class PageBanner < ActiveRecord::Base
+    include ActiveStorage::Attached::Model
     attr_accessor :current_user
 
     # Not used
@@ -10,7 +11,7 @@ module Effective
     has_many :pages
 
     # For the image attachment
-    has_one_attached :file
+    # has_one_attached :file
 
     log_changes if respond_to?(:log_changes)
 

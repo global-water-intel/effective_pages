@@ -1,5 +1,6 @@
 module Effective
   class Permalink < ApplicationRecord
+    include ActiveStorage::Attached::Model
     if defined?(PgSearch)
       include PgSearch::Model
 
@@ -8,7 +9,7 @@ module Effective
 
     self.table_name = (EffectivePages.permalinks_table_name || :permalinks).to_s
 
-    has_one_attached :attachment
+    # has_one_attached :attachment
     has_one_purgable :attachment
 
     acts_as_tagged

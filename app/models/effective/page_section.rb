@@ -3,10 +3,11 @@
 # The admin user can only edit/update content
 module Effective
   class PageSection < ActiveRecord::Base
+    include ActiveStorage::Attached::Model
     attr_accessor :current_user
 
     has_many_rich_texts
-    has_one_attached :file
+    # has_one_attached :file
 
     log_changes if respond_to?(:log_changes)
 
