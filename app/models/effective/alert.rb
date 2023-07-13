@@ -1,5 +1,7 @@
 module Effective
   class Alert < ApplicationRecord
+    include ActionText::Attribute
+
     self.table_name = (EffectivePages.alerts_table_name || :alerts).to_s
 
     log_changes if respond_to?(:log_changes)
