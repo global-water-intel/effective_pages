@@ -1,0 +1,38 @@
+= effective_form_with(model: [:admin, page], engine: true) do |f|
+
+  = f.text_field :title, hint: "Page title"
+
+  = f.check_box :menu, label: 'Yes, display this page in a menu'
+
+  = f.show_if :menu, true do
+
+    = f.check_box :menu_root_level, label: "This is a top level menu item. It has no content and cannot be viewed, but can have children pages"
+
+    = f.show_if :menu_root_level, true do
+      = f.hidden_field :menu_parent_id, value: nil
+
+      - if (menus = EffectivePages.menus).length > 1
+        = f.select :menu_name, menus, label: 'Top level menu item in this menu'
+      - else
+        = f.hidden_field :menu_name, value: menus.first
+
+    = f.show_if :menu_root_level, false do
+      = f.select :menu_parent_id, admin_menu_parent_collection(f.object), required: true, grouped: true, hint: 'Displayed on the menu underneath this parent'
+      = f.text_field :menu_group, hint: 'Displayed on the menu in this group or column'
+
+    = f.text_field :menu_title, hint: "Display this title on menus instead of full page title"
+
+    = f.text_field :menu_url, label: "Redirect to path or url instead of displaying page",
+      hint: "Must start with http(s):// or /"
+
+  = effective_submit(f)
+
+- if page.menu_parent.present?
+  .mb-4
+    %h3 Parent
+    = link_to(page.menu_parent, effective_pages.edit_admin_page_path(page.menu_parent))
+
+- if page.menu_children.present?
+  %h3 Children
+  - datatable = EffectivePagesMenuDatatable.new(page: page)
+  = render_datatable(datatable, simple: true, inline: true)

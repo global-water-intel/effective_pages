@@ -1,0 +1,7 @@
+= effective_form_with(model: [:admin, page], engine: true) do |f|
+  = f.check_box :authenticate_user, label: 'Restrict the page to any signed in user'
+
+  - if EffectivePages.use_effective_roles
+    = f.checks :roles, EffectiveRoles.roles_collection(f.object), label: 'Restrict the page to any signed in user that has the role:'
+
+  = f.submit

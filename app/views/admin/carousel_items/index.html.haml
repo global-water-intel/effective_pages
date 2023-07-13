@@ -1,0 +1,5 @@
+- Array(EffectivePages.carousels).each do |carousel|
+  .bg-white.my-5.p-3.rounded
+    %h3.mb-0 #{carousel.to_s.titleize} Carousel
+    - datatable = EffectiveCarouselItemsDatatable.new(carousel: carousel)
+    = render_datatable(datatable, simple: true, inline: true)

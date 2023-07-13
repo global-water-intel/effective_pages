@@ -1,0 +1,64 @@
+= effective_form_with(model: [:admin, page], engine: true) do |f|
+
+  = f.text_field :title
+
+  = f.check_box :draft,
+    label: 'Save this page as a draft. It will not appear in a menu and can only be accessed by admin users.'
+
+  = f.text_field :meta_description,
+    hint: "150 character summary. Appears on Google search results underneath the page title. ",
+    input_html: { maxlength: 150 }
+
+  - if (layouts = EffectivePages.layouts).length > 1
+    = f.select :layout, layouts
+  - else
+    = f.hidden_field :layout, value: layouts.first
+
+  - if (templates = EffectivePages.templates).length > 1
+    = f.select :template, templates
+  - else
+    = f.hidden_field :template, value: templates.first
+
+  - if f.object.persisted? || f.object.errors.include?(:slug)
+    - current_url = (effective_pages.page_url(f.object) rescue nil)
+    = f.text_field :slug, hint: "The slug controls this page's internet address. Be careful, changing the slug will break links that other websites may have to the old address.<br>#{('This page is currently reachable via ' + link_to(current_url.gsub(f.object.slug, '<strong>' + f.object.slug + '</strong>').html_safe, current_url)) if current_url }".html_safe
+
+  - if EffectivePages.banners?
+    - if EffectivePages.banners_force_randomize
+      = f.check_box :banner, label: 'Choose a page banner'
+    - else
+      = f.check_box :banner, label: 'Display a page banner on this page'
+
+    = f.show_if(:banner, true) do
+      = card do
+        %p.text-muted
+          - if EffectivePages.banners_force_randomize
+            A random banner will always be displayed, or you may choose a specific banner below.
+
+          Please visit #{link_to('Page Banners', effective_pages.admin_page_banners_path)} to add or update the page banners.
+
+        - if !EffectivePages.banners_force_randomize
+          = f.check_box :banner_random, label: 'Display a random page banner. Ignored if you choose a page banner below.'
+
+        = f.select :page_banner_id, Effective::PageBanner.sorted.all, label: 'Choose a page banner'
+
+
+  = render partial: '/admin/pages/additional_fields', locals: { page: page, form: f, f: f }
+
+  - if f.object.persisted? && f.object.menu_root_with_children?
+    .alert.alert-info.my-3.pl-0
+      %ul.mb-0
+        %li This page is a top level menu item with at least one child page
+        %li It will render on the menu as a dropdown link
+        %li Users will not be able to click access page via the menu
+        %li Visiting the page URL directly will return a 404 error
+        %li If you want this page to be accessible while also being a top level menu item, it needs to have no child pages
+
+  - if f.object.persisted? && !f.object.menu_root_with_children?
+    = render '/admin/pages/rich_text_areas', page: page, f: f
+
+  -# This is for duplicate
+  - if f.object.new_record? && f.object.rich_texts.present?
+    = render '/admin/pages/rich_text_areas', page: page, f: f
+
+  = effective_submit(f)

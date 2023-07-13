@@ -1,0 +1,21 @@
+- if inline_datatable?
+  = render '/admin/pages/form_menu', page: page
+
+- else
+  = tabs do
+    = tab 'Page' do
+      = render '/admin/pages/form_page', page: page
+
+    - if page.persisted?
+      - if EffectivePages.menus.present?
+        = tab 'Menu' do
+          = render '/admin/pages/form_menu', page: page
+
+      = tab 'Access' do
+        = render '/admin/pages/form_access', page: page
+
+      = tab 'Logs' do
+        = render_datatable(page.log_changes_datatable, inline: true, namespace: :admin)
+
+      = tab 'Tags' do
+        = render '/admin/pages/form_tags', page: page

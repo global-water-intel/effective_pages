@@ -1,0 +1,11 @@
+= effective_form_with(model: [:admin, page_banner], engine: true) do |f|
+  = f.text_field :name, hint: 'The name of this banner, used only for reference'
+  = f.file_field :file, label: 'Image attachment', hint: EffectivePages.banners_hint_text
+  = f.text_field :caption, hint: 'Optional. Displayed alongside the image'
+
+  -# - if defined?(EffectiveArticleEditor)
+  -#   = f.article_editor :rich_text_body, label: 'Body', hint: 'The main content'
+  -# - else
+  -#   = f.rich_text_area :rich_text_body, label: 'Body', hint: 'The main content'
+
+  = effective_submit(f)

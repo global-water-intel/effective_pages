@@ -1,0 +1,21 @@
+= effective_form_with(model: [:admin, carousel_item], engine: true) do |f|
+  - if (carousels = EffectivePages.carousels).length > 1
+    = f.select :carousel, carousels, label: 'Carousel item in this carousel'
+  - else
+    = f.hidden_field :carousel, value: carousels.first
+
+  = f.text_field :title
+
+  - if defined?(EffectiveArticleEditor)
+    = f.article_editor :rich_text_body, label: 'Body'
+  - else
+    = f.rich_text_area :rich_text_body, label: 'Body'
+
+  .row
+    .col= f.text_field :link_label
+    .col= f.url_field :link_url
+
+  = f.file_field :file, label: 'Image attachment', hint: EffectivePages.carousels_hint_text
+  = f.text_field :caption, hint: 'Optional'
+
+  = effective_submit(f)
